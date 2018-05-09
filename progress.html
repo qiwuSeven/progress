@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <script type="text/javascript" src="jquery-1.11.0.js"></script>
+        <style>
+            .demo2{
+                transform-origin: center;
+                transform: rotate(-90deg);
+            }
+
+        </style>
+    </head>
+    <body> 
+
+        <svg xmlns="http://www.w3.org/200/svg" height="150" width="110">
+            <circle id="J_demo1" cx="55" cy="55" r="50" fill="none" stroke="grey" stroke-width="10" stroke-linecap="round"/>
+            <circle class="demo2" id="J_demo2" cx="55" cy="55" r="50" fill="none" stroke="red" stroke-width="10"/>  
+        </svg>
+        <svg>
+            <line id="line1" x1="10" y1="10" x2="110" y2="10" fill="none" stroke-width="12" stroke="grey"/>
+            <line id="line2" x1="10" y1="10" x2="20" y2="10" fill="none" stroke-width="12" stroke="red"/>
+        </svg>
+        <div id="progress1"></div>
+        <div id="progress2">
+            <div id="s1"></div>
+            <div id="s2"></div>
+        </div>
+    </body>
+    <script>
+
+        var demo1 =  document.querySelector("#J_demo1");
+        var demo2 =  document.querySelector("#J_demo2");
+        var line1 =  document.querySelector("#line1");
+        var line2 =  document.querySelector("#line2");
+
+        var circleLength = Math.floor(2 * Math.PI * demo2.getAttribute("r"));
+
+        function rotateCircle (val,color1,color2) {
+            demo2.setAttribute("stroke-dasharray","" + circleLength * val / 100 + ",10000");
+            demo1.setAttribute("stroke",color1);
+            demo2.setAttribute("stroke",color2)
+        }
+        function lineProgress (val,color1,color2) {
+            line2.setAttribute("x2",val);
+            line1.setAttribute("stroke",color1);
+            line2.setAttribute("stroke",color2)
+        }
+        rotateCircle(50,"red","green");
+        lineProgress(40,"#344556","green");
+    </script>
+</html>
