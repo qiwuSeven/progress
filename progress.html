@@ -1,53 +1,232 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-        <script type="text/javascript" src="jquery-1.11.0.js"></script>
-        <style>
-            .demo2{
-                transform-origin: center;
-                transform: rotate(-90deg);
-            }
 
-        </style>
-    </head>
-    <body> 
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!-- <script type="text/javascript" src="jquery-1.11.0.js"></script> -->
+    <style>
+    .demo2 {
+        transform-origin: center;
+        transform: rotate(-90deg);
+    }
 
-        <svg xmlns="http://www.w3.org/200/svg" height="150" width="110">
-            <circle id="J_demo1" cx="55" cy="55" r="50" fill="none" stroke="grey" stroke-width="10" stroke-linecap="round"/>
-            <circle class="demo2" id="J_demo2" cx="55" cy="55" r="50" fill="none" stroke="red" stroke-width="10"/>  
-        </svg>
-        <svg>
-            <line id="line1" x1="10" y1="10" x2="110" y2="10" fill="none" stroke-width="12" stroke="grey"/>
-            <line id="line2" x1="10" y1="10" x2="20" y2="10" fill="none" stroke-width="12" stroke="red"/>
-        </svg>
-        <div id="progress1"></div>
-        <div id="progress2">
-            <div id="s1"></div>
-            <div id="s2"></div>
-        </div>
-    </body>
+    .progress-bar {
+        background: gray;
+        border-radius: 3px;
+        width: 150px;
+        display: inline-block;
+    }
+
+    .inner-bar {
+        width: 0;
+        height: 6px;
+        transition: width 0.4s ease;
+        border-radius: 3px;
+    }
+
+    .progress-circle {
+        /*            background: gray;
+*/
+        width: 70px;
+        border-radius: 35px;
+        width: 70px;
+        height: 70px;
+        display: inline-block;
+        position: relative;
+    }
+
+    .inner-circle {
+        background: #fff;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        line-height: 50px;
+        text-align: center;
+        width: 50px;
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        z-index: 1;
+    }
+
+    .circle-left {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 35px;
+        height: 70px;
+        background: blue;
+        border-top-right-radius: 35px;
+        border-bottom-right-radius: 35px;
+        transition: all 0.4s ease;
+        display: inline-block;
+    }
+
+    .circle-right {
+        right: 0;
+        top: 0;
+        background: blue;
+        position: absolute;
+        width: 35px;
+        height: 70px;
+        border-top-right-radius: 35px;
+        border-bottom-right-radius: 35px;
+        display: inline-block;
+    }
+
+    .outer-circle {
+        height: 70px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 70px;
+    }
+
+    .progress-triangle {
+        position: relative;
+    }
+
+    .bg {
+        width: 0;
+        border-top: 17px solid;
+
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 17px solid yellow;
+    }
+
+    .triangle-up {
+        position: absolute;
+        top: 0;
+        width: 0;
+        border-top: 17px solid yellow;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        transform: scale(1);
+        transform-origin: 50% 100%;
+        transition: all 0.4s ease;
+    }
+
+    .triangle-down {
+        width: 0;
+        position: absolute;
+        bottom: 0;
+        border-bottom: 17px solid gray;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        transform: scale(1);
+        transform-origin: 50% 0;
+        transition: all 0.4s ease;
+    }
+
+    .percent {
+        position: absolute;
+        left: 40px;
+        top: 40px;
+        transform: translate(-50%, -50%);
+    }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+    </div>
     <script>
-
-        var demo1 =  document.querySelector("#J_demo1");
-        var demo2 =  document.querySelector("#J_demo2");
-        var line1 =  document.querySelector("#line1");
-        var line2 =  document.querySelector("#line2");
-
-        var circleLength = Math.floor(2 * Math.PI * demo2.getAttribute("r"));
-
-        function rotateCircle (val,color1,color2) {
-            demo2.setAttribute("stroke-dasharray","" + circleLength * val / 100 + ",10000");
-            demo1.setAttribute("stroke",color1);
-            demo2.setAttribute("stroke",color2)
+    class Progress {
+        constructor({ type, percent, container, slotColor, progressColor }) {
+            this.container = container
+            this.type = type
+            this.percent = percent
+            this.slotcolor = slotColor || 'gray'
+            this.progressColor = progressColor || 'blue'
+            this.render();
         }
-        function lineProgress (val,color1,color2) {
-            line2.setAttribute("x2",val);
-            line1.setAttribute("stroke",color1);
-            line2.setAttribute("stroke",color2)
+        setSlotColor(color) {
+            this.slotColor = color || 'gray';
+            this.render();
         }
-        rotateCircle(50,"red","green");
-        lineProgress(40,"#344556","green");
+        setProgressColor(color) {
+            this.progressColor = color || 'gray';
+            this.render();
+        }
+        getPercent() {
+            return this.percent + '%';
+        }
+        setPercent(val) {
+            this.percent = val
+            this.render();
+        }
+        setType(type) {
+            this.type = type;
+            this.render();
+        }
+        render() {
+            switch (this.type) {
+                case 'bar':
+                    this.renderBar();
+                    break;
+                case 'circle':
+                    this.renderCircle();
+                    break;
+                case 'sandGlass':
+                    this.renderGlass();
+                    break;
+            }
+        }
+        renderBar() {
+            var bar = this.container.querySelector('.progress-bar');
+            if (!bar) {
+                this.container.innerHTML = `<div class='progress-bar'><div class='inner-bar'></div></div>`;
+                bar = this.container.querySelector('.progress-bar');
+                bar.style.background = this.slotColor
+            }
+            var innerBar = bar.querySelector('.inner-bar');
+            innerBar.style.width = this.percent + '%'
+            innerBar.style.background = this.progressColor
+        }
+        renderCircle() {
+            var bar = this.container.querySelector('.progress-circle');
+            if (!bar) {
+                this.container.innerHTML = `<div class="progress-circle"><svg xmlns="http://www.w3.org/200/svg" height="80" width="80"><circle id="J_demo1" cx="40" cy="40" r="30" fill="none" stroke-width="10" stroke-linecap="round"/><circle class="demo2" id="J_demo2" cx="40" cy="40" r="30" fill="none" stroke-width="10"/><span class="percent"></span></svg></div>`;
+            }
+            var c1 = this.container.querySelector('#J_demo1')
+            var c2 = this.container.querySelector('#J_demo2')
+            var text = this.container.querySelector(".percent")
+            c1.setAttribute('stroke', this.slotColor)
+            c2.setAttribute('stroke', this.progressColor)
+            var circleLength = Math.floor(2 * Math.PI * c2.getAttribute("r"));
+            c2.setAttribute("stroke-dasharray", "" + circleLength * this.percent / 100 + ",10000");
+            text.innerText = this.percent + '%'
+        }
+        renderGlass() {
+            var bar = this.container.querySelector('.progress-triangle');
+            if (!bar) {
+                this.container.innerHTML = `<div class="progress-triangle"><div class="bg"></div><div class="triangle-up"></div><div class="triangle-down"></div></div>`;
+            }
+            var bg = this.container.querySelector('.bg')
+            bg.style.borderTopColor = this.slotColor
+            bg.style.borderBottomColor = this.progressColor;
+            var triangleUp = this.container.querySelector('.triangle-up')
+            var triangleDown = this.container.querySelector('.triangle-down')
+            triangleUp.style.transform = `scale(${Math.sqrt(1 - this.percent / 100)}`
+            triangleUp.style.borderTopColor = this.progressColor;
+            triangleDown.style.transform = `scale(${Math.sqrt(1 - this.percent / 100)})`
+            triangleDown.style.borderBottomColor = this.slotColor;
+        }
+    }
+    var pro = new Progress({
+        type: 'sandGlass',
+        percent: 30,
+        container: document.getElementById('container')
+    });
+    console.log(pro.getPercent())
+    pro.setPercent(60)
+    pro.setSlotColor('pink')
+    pro.setProgressColor('red')
+    pro.setType('bar')
+    pro.setType('circle')
     </script>
+</body>
+
 </html>
