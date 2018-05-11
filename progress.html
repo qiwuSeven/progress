@@ -13,9 +13,10 @@
 
     .progress-bar {
         background: gray;
+        margin-left: auto;
+        margin-right: auto;
         border-radius: 3px;
         width: 150px;
-        display: inline-block;
     }
 
     .inner-bar {
@@ -26,12 +27,9 @@
     }
 
     .progress-circle {
-        /*            background: gray;
-*/
-        width: 70px;
         border-radius: 35px;
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
         display: inline-block;
         position: relative;
     }
@@ -85,24 +83,26 @@
 
     .progress-triangle {
         position: relative;
+        width: 40px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .bg {
         width: 0;
-        border-top: 17px solid;
-
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
-        border-bottom: 17px solid yellow;
+        border-top: 34px solid;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
+        border-bottom: 34px solid yellow;
     }
 
     .triangle-up {
         position: absolute;
         top: 0;
         width: 0;
-        border-top: 17px solid yellow;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
+        border-top: 34px solid yellow;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
         transform: scale(1);
         transform-origin: 50% 100%;
         transition: all 0.4s ease;
@@ -112,9 +112,9 @@
         width: 0;
         position: absolute;
         bottom: 0;
-        border-bottom: 17px solid gray;
-        border-left: 10px solid transparent;
-        border-right: 10px solid transparent;
+        border-bottom: 34px solid gray;
+        border-left: 20px solid transparent;
+        border-right: 20px solid transparent;
         transform: scale(1);
         transform-origin: 50% 0;
         transition: all 0.4s ease;
@@ -126,19 +126,51 @@
         top: 40px;
         transform: translate(-50%, -50%);
     }
+    .container {
+        display: flex;
+    }
+    .box {
+        text-align: center;
+        flex: 1;
+    }
     </style>
 </head>
 
 <body>
-    <div id="container">
+    <div class="container">
+        <div class="box">
+            <label for="circle">环形进度条</label>
+            <div id="circle">
+            </div>
+        </div>
+        <div class="box">
+            <label for="bar">条形进度条</label>
+            <div id="bar">
+            </div>
+        </div>
+        <div class="box">
+            <label for="sandGlass">沙漏进度条</label>
+            <div id="sandGlass">
+            </div>
+        </div>
     </div>
+    代码调用示例
+    <pre>
+    var circleProgress = new Progress({
+        type: 'circle',   // : 'circle' | 'bar' | 'sandGlass'
+        percent: 30,
+        slotcolor: 'gray',
+        progressColor: 'blue',
+        container: document.getElementById('circle')
+    });
+    </pre>
     <script>
     class Progress {
         constructor({ type, percent, container, slotColor, progressColor }) {
             this.container = container
             this.type = type
             this.percent = percent
-            this.slotcolor = slotColor || 'gray'
+            this.slotColor = slotColor || 'gray'
             this.progressColor = progressColor || 'blue'
             this.render();
         }
@@ -215,17 +247,33 @@
             triangleDown.style.borderBottomColor = this.slotColor;
         }
     }
-    var pro = new Progress({
+    var circleProgress = new Progress({
+        type: 'circle',
+        percent: 30,
+        slotcolor: 'gray',
+        progressColor: 'blue',
+        container: document.getElementById('circle')
+    });
+    var barProgress = new Progress({
+        type: 'bar',
+        percent: 30,
+        slotcolor: 'gray',
+        progressColor: 'red',
+        container: document.getElementById('bar')
+    });
+    var sandGlassProgress = new Progress({
         type: 'sandGlass',
         percent: 30,
-        container: document.getElementById('container')
+        slotcolor: 'gray',
+        progressColor: 'yellow',
+        container: document.getElementById('sandGlass')
     });
-    console.log(pro.getPercent())
-    pro.setPercent(60)
-    pro.setSlotColor('pink')
-    pro.setProgressColor('red')
-    pro.setType('bar')
-    pro.setType('circle')
+    // console.log(pro.getPercent())
+    // pro.setPercent(60)
+    // pro.setSlotColor('pink')
+    // pro.setProgressColor('red')
+    // pro.setType('bar')
+    // pro.setType('circle')
     </script>
 </body>
 
